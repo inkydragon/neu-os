@@ -1,11 +1,11 @@
-AS=i686-elf-as
-LD=i686-elf-ld
-OBJCOPY=i686-elf-objcopy
+AS=as --32
+LD=ld -m elf_i386
+OBJCOPY=objcopy
 QEMU=qemu-system-i386
 
 LDFLAGS	+= -Ttext 0
 
-.PHONY=clean run all
+.PHONY=clean
 
 all: bootsect
 
