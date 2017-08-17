@@ -1,6 +1,5 @@
 AS=as --32
 LD=ld -m elf_i386
-OBJCOPY=objcopy
 QEMU=qemu-system-i386
 
 LDFLAGS	+= -T ld-bootsect.ld
@@ -9,14 +8,13 @@ LDFLAGS	+= -T ld-bootsect.ld
 
 all: run
 
-bootsect: bootsect.s
+bootsect: bootsect.s ld-bootsect.ld
 	@$(AS) -o bootsect.o bootsect.s
 	@$(LD) $(LDFLAGS) -o bootsect bootsect.o
-	@cp -f bootsect bootsect.sym
-	@$(OBJCOPY) -O binary -j .text bootsect
+	@objcopy -O binary -j .text bootsect
 
 run: bootsect
 	@$(QEMU) -boot a -fda bootsect
 
 clean:
-	@rm -f bootsect *.o *.sym
+	@rm -f bootsect *.o

@@ -6,25 +6,26 @@
 #                                                               #
 #################################################################
 
-	.code16   # 指定语法为 十六位汇编
+.code16   # 指定语法为 十六位汇编
 
 # rewrite with AT&T syntax by falcon <wuzhangjin@gmail.com> at 081012
 # Modified by VOID001<zhangjianqiu13@gmail.com> at 2017 03 05
 # loads pretty fast by getting whole sectors at a time whenever possible.
 
-	.global _start  # 程序开始处
-	.text
+.global _bootstart  # 程序开始处
 
-	.equ BOOTSEG, 0x07c0  
-       # 当此扇区被BIOS识别为启动扇区装载到内存中时，装载到0x07c0段处
-       # 此时我们处于实模式(REAL MODE)中，对内存的寻址方式为
-       # (段地址 << 4 + 偏移量) 可以寻址的线性空间为 20 位
+.text
 
-	ljmp $BOOTSEG, $_start   
-  # 修改cs寄存器为BOOTSEG, 并跳转到_start处执行我们的代码
-  # 清理掉流水线缓存
+.equ BOOTSEG, 0x07c0  
+     # 当此扇区被BIOS识别为启动扇区装载到内存中时，装载到0x07c0段处
+     # 此时我们处于实模式(REAL MODE)中，对内存的寻址方式为
+     # (段地址 << 4 + 偏移量) 可以寻址的线性空间为 20 位
 
-_start:
+ljmp $BOOTSEG, $_bootstart   
+# 修改cs寄存器为BOOTSEG, 并跳转到_start处执行我们的代码
+# 清理掉流水线缓存
+
+_bootstart:
 # 调用 INT10-03h 中断 获取光标所在的 行和列，为输出字符提供参数
 # Int 10 service 0x03
 #   AH = 0x03
@@ -46,8 +47,8 @@ _start:
 #   BH = Display page number/ 显示页
 #   BL = Color Attribute    / 字符颜色(CGA 标准)
 #   CX = Length of string   / 字符串长度
-#   DH = Row position     / 输出字符串-行-位置 
-#   DL = Column position  / 输出字符串-列-位置
+#   DH = Row position     / 输出字符串`行`位置 
+#   DL = Column position  / 输出字符串`列`位置
 #   ES:BP = Pointer to string / 指向要输出的字符串
 # Return:
 #   None
@@ -61,22 +62,19 @@ _start:
   mov	$0x1301, %ax	# write string, move cursor
   int	$0x10				  # 调用中断 INT10
 
-loop_forever:
-	jmp loop_forever  # 死循环
-
-sectors:
-	.word 0
+loop:
+	jmp loop  # 死循环
 
 msg1:
 	.byte 13,10
 	.ascii "Hello woclass!"
 	.byte 13,10,13,10
 
-	.= 510  #     这里是对齐语法 等价于 .org= 表示在该处补零
-          # 一直补到地址为 510 的地方 (即第一扇区的最后两字节)
-          #     然后在这里填充好0xaa55魔术值，BIOS会识别硬盘中
-          # 第一扇区以0xaa55结尾的为启动扇区，于是BIOS会装载代
-          # 码并且运行
+.= 510  #     这里是对齐语法 等价于 .org= 表示在该处补零
+        # 一直补到地址为 510 的地方 (即第一扇区的最后两字节)
+        #     然后在这里填充好0xaa55魔术值，BIOS会识别硬盘中
+        # 第一扇区以0xaa55结尾的为启动扇区，于是BIOS会装载代
+        # 码并且运行
 
-boot_flag:
+signature:
 	.word 0xAA55
