@@ -27,4 +27,4 @@ demo: demo.S ld-bootsect.ld
 	@objcopy -O binary -j .text demo
 
 clean:
-	@rm -f bootsect demo *.o
+	@rm -f bootsect demo Image *.o

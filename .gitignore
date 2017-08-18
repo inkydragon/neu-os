@@ -2,3 +2,4 @@
 *.sym
 bootsect
 env.sh
+Image
