@@ -2,7 +2,7 @@ AS=as --32
 LD=ld -m elf_i386
 QEMU=qemu-system-i386
 
-LDFLAGS	+= -T ld-bootsect.ld
+LDFLAGS += -T ld-bootsect.ld
 
 .PHONY=clean
 

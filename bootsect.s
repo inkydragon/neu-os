@@ -1,7 +1,7 @@
 #################################################################
 #                                                               #
-#  Lesson 1: 创建一个"Hello World"引导扇区                      #
-#  Goal: 了解操作系统引导的过程，并且通过使用实模式下的汇编     #
+#  Lesson 1: 创建一个"Hello World"引导扇                        #
+#  Goal: 了解操作系统引导的过程，并且通过使用实模式下的汇       #
 #  在屏幕上输出一行字符串并进入到死循环                         #
 #                                                               #
 #################################################################
@@ -35,10 +35,10 @@ _bootstart:
 #   CL = Cursor End line   / 光标终止列
 #   DH = Row    / 行号
 #   DL = Column / 列号
-  xor %bh, %bh      # BH=0
-  mov	$0x03, %ah    # 03H 号功能 读取光标位置信息
-  int	$0x10         # INT 10H 中断 显示服务 
-                    # 返回: DX (DH 行, DL 列)	
+	xor %bh, %bh      # BH=0
+	mov $0x03, %ah    # 03H 号功能 读取光标位置信息
+	int $0x10         # INT 10H 中断 显示服务
+	                  # 返回: DX (DH 行, DL 列)
 
 # 调用 INT10-1301h 中断 输出字符串
 # Int 10 service 0x13 subservice 0x01
@@ -52,15 +52,15 @@ _bootstart:
 #   ES:BP = Pointer to string / 指向要输出的字符串
 # Return:
 #   None
-	xor	%bh, %bh      # BH=0 页号
-	mov	$0x2e, %bl	  # BL 字符颜色 
-  mov	$20, %cx			# CX 输出字符长度	
+	xor %bh, %bh      # BH=0 页号
+	mov $0x2e, %bl    # BL 字符颜色 
+	mov $20, %cx      # CX 输出字符长度
 # DL/DH 已通过 INT10-03h 获取
-  mov $BOOTSEG, %ax # 通过 AX 中转 BOOTSEG 的地址到ES
+	mov $BOOTSEG, %ax # 通过 AX 中转 BOOTSEG 的地址到ES
 	mov %ax, %es      # 设置好 ES 寄存器，为后续输出字符串准备 
-  mov $msg1, %bp    # ES:BP 指向要输出的字符串
-  mov	$0x1301, %ax	# write string, move cursor
-  int	$0x10				  # 调用中断 INT10
+	mov $msg1, %bp    # ES:BP 指向要输出的字符串
+	mov $0x1301, %ax  # write string, move cursor
+	int $0x10         # 调用中断 INT10
 
 loop:
 	jmp loop  # 死循环
